@@ -79,6 +79,7 @@ async function main(mapFile) {
   let screen = Array(screenHeight).fill(undefined).map(() => Array(screenHeight).fill('%'));
 
   setInterval(() => {
+    // For each column of text, cast out a ray
     for (let x = 0; x < screenWidth; x++) {
       let rayAngle = (playerAngle - fovAngle / 2.0) + (x / screenWidth) * fovAngle;
       let distanceToWall = 0.0;
@@ -88,6 +89,8 @@ async function main(mapFile) {
       let eyeY = Math.cos(rayAngle);
       let stepSize = 0.005;
 
+      // Slowly increment the length of the ray until we either
+      // hit a wall or reach the render depth
       while (!hasHitWall && distanceToWall < renderDepth) {
         distanceToWall += stepSize;
 
@@ -100,6 +103,9 @@ async function main(mapFile) {
         } else if (mapIsWall(map, mapWidth, testX, testY)) {
           hasHitWall = true;
 
+          // Detect edges/corners/boundaries of walls and render them with a
+          // different character. This makes it easier to see the border
+          // between wall panels that are visible but at different distances
           let corners = [];
 
           for (let tx = 0; tx < 2; tx++) {
@@ -123,19 +129,25 @@ async function main(mapFile) {
       }
 
       // Get distance of projection to avoid fisheye effect
-      let projectedDistanceToWall = distanceToWall*Math.cos(rayAngle - playerAngle);
+      let projectedDistanceToWall = distanceToWall * Math.cos(rayAngle - playerAngle);
 
-      let numCeilingTiles = Math.floor(screenHeight / 2 - screenHeight / projectedDistanceToWall);
-      let numFloorTiles = screenHeight - numCeilingTiles;
+      // If a wall is "infinitely" far away, we want half the screen to be sky
+      // and half the screen to be ground.
+      let bottomSkyPosition = Math.floor(screenHeight / 2 - screenHeight / projectedDistanceToWall);
+      let bottomWallPosition = screenHeight - bottomSkyPosition;
 
+      // Determine the character or each row in this column
       for (let y = 0; y < screenHeight; y++) {
-        if (y < numCeilingTiles) {
-          let floorDist = 1.0 - ((screenHeight / 2 - y) / (screenHeight / 2));
-          let shade = Math.floor(0xFF * (1 - floorDist));
+        if (y < bottomSkyPosition) {
+          let skyDist = 1.0 - ((screenHeight / 2 - y) / (screenHeight / 2));
 
-          screen[y][x] = term.colorRgb.str(0x00, 0x00, shade, '~');
+          let red = Math.floor(0x75 * (1 - skyDist));
+          let green = Math.floor(0xDA * (1 - skyDist));
+          let blue = Math.floor(0xFF * (1 - skyDist));
+
+          screen[y][x] = term.colorRgb.str(red, green, blue, '~');
           // screen[y][x] = ' ';
-        } else if (y <= numFloorTiles) {
+        } else if (y <= bottomWallPosition) {
           let wallTile;
 
           // wallTile = color(term, '█', dist);
@@ -160,6 +172,9 @@ async function main(mapFile) {
           let floorTile;
           let floorDist = 1.0 - ((y - screenHeight / 2) / (screenHeight / 2));
 
+          // We use the same character for every floor tile here, but
+          // we were experimenting with changing the floor tile depending
+          // on the distance from the camera
           let shade = Math.floor(0xFF * (1 - floorDist ** 0.35));
           if (floorDist < 0.25) {
             floorTile = '·';
