@@ -10,9 +10,11 @@ async function loadMap(mapFile) {
 }
 
 function color(term, text, dist) {
+  // This was supposed to be "brick red" but...it's not brick
   // let red = Math.floor(0xCB * (1 - dist));
   // let green = Math.floor(0x41 * (1 - dist));
   // let blue = Math.floor(0x54 * (1 - dist));
+
   let red = Math.floor(0xFF * (1 - dist));
   let green = Math.floor(0xFF * (1 - dist));
   let blue = Math.floor(0xFF * (1 - dist));
@@ -60,9 +62,9 @@ async function main(mapFile) {
     if (name === 'CTRL_C') {
       term.processExit();
     } else if (name === 'a') {
-      playerAngle -= 0.05;
+      playerAngle -= 0.03;
     } else if (name === 'd') {
-      playerAngle += 0.05;
+      playerAngle += 0.03;
     } else if (name === 'w') {
       playerX += Math.sin(playerAngle) * 0.25;
       playerY += Math.cos(playerAngle) * 0.25;
@@ -177,7 +179,7 @@ async function main(mapFile) {
     }
 
     renderScreen(term, screen);
-  }, 100);
+  }, 50);
 }
 
 function makeScreen(screen) {
