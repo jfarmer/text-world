@@ -10,8 +10,14 @@ async function loadMap(mapFile) {
 }
 
 function color(term, text, dist) {
-  let shade = Math.floor(0xFF * (1 - dist));
-  return term.colorRgb.str(shade, shade, shade, text);
+  // let red = Math.floor(0xCB * (1 - dist));
+  // let green = Math.floor(0x41 * (1 - dist));
+  // let blue = Math.floor(0x54 * (1 - dist));
+  let red = Math.floor(0xFF * (1 - dist));
+  let green = Math.floor(0xFF * (1 - dist));
+  let blue = Math.floor(0xFF * (1 - dist));
+
+  return term.colorRgb.str(red, green, blue, text);
 }
 
 function isRayOutOfBounds(rayX, rayY, mapWidth, mapHeight) {
@@ -39,7 +45,7 @@ async function main(mapFile) {
   let playerX = 16.0;
   let playerY = 16.0;
   let playerAngle = 0.0;
-  let fovAngle = Math.PI / 4;
+  let fovAngle = Math.PI / 3;
   let renderDepth = 28.0;
 
   let mapHeight = 32;
@@ -122,7 +128,11 @@ async function main(mapFile) {
 
       for (let y = 0; y < screenHeight; y++) {
         if (y < numCeilingTiles) {
-          screen[y][x] = ' ';
+          let floorDist = 1.0 - ((screenHeight / 2 - y) / (screenHeight / 2));
+          let shade = Math.floor(0xFF * (1 - floorDist));
+
+          screen[y][x] = term.colorRgb.str(0x00, 0x00, shade, '~');
+          // screen[y][x] = ' ';
         } else if (y <= numFloorTiles) {
           let wallTile;
 
