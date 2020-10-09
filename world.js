@@ -40,7 +40,7 @@ async function main(mapFile) {
   let playerY = 16.0;
   let playerAngle = 0.0;
   let fovAngle = Math.PI / 4;
-  let renderDepth = 24.0;
+  let renderDepth = 28.0;
 
   let mapHeight = 32;
   let mapWidth = 32;
@@ -91,7 +91,6 @@ async function main(mapFile) {
           distanceToWall = renderDepth;
         } else if (mapIsWall(map, mapWidth, testX, testY)) {
           hasHitWall = true;
-          distanceToWall *= Math.cos(playerAngle - rayAngle);
 
           let corners = [];
 
@@ -115,7 +114,10 @@ async function main(mapFile) {
         }
       }
 
-      let numCeilingTiles = Math.floor(screenHeight / 2 - screenHeight / distanceToWall);
+      // Get distance of projection to avoid fisheye effect
+      let projectedDistanceToWall = distanceToWall*Math.cos(rayAngle - playerAngle);
+
+      let numCeilingTiles = Math.floor(screenHeight / 2 - screenHeight / projectedDistanceToWall);
       let numFloorTiles = screenHeight - numCeilingTiles;
 
       for (let y = 0; y < screenHeight; y++) {
@@ -165,7 +167,7 @@ async function main(mapFile) {
     }
 
     renderScreen(term, screen);
-  }, 50);
+  }, 100);
 }
 
 function makeScreen(screen) {
