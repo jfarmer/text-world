@@ -36,14 +36,14 @@ async function main(mapFile) {
 
   let screenWidth = term.width;
   let screenHeight = term.height;
-  let playerX = 8.0;
-  let playerY = 8.0;
+  let playerX = 16.0;
+  let playerY = 16.0;
   let playerAngle = 0.0;
   let fovAngle = Math.PI / 4;
-  let renderDepth = 16.0;
+  let renderDepth = 24.0;
 
-  let mapHeight = 16;
-  let mapWidth = 16;
+  let mapHeight = 32;
+  let mapWidth = 32;
 
   if (!mapFile) {
     console.error('Error: No map file supplied');
