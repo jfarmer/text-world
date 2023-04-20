@@ -155,9 +155,9 @@ async function main(mapFile) {
             wallTile = '·';
           } else if (distanceToWall <= renderDepth / 4) {
             wallTile = '█'; // color(term, '█', dist);
-          } else if (distanceToWall < renderDepth / 3) {
+          } else if (distanceToWall < renderDepth / 2) {
             wallTile = '▓'; // '▓';
-          } else if (distanceToWall <= renderDepth / 2) {
+          } else if (distanceToWall <= renderDepth / 1.25) {
             wallTile = '▒'; // '▒';
           } else if (distanceToWall <= renderDepth) {
             wallTile = '░'; // '░';
